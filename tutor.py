@@ -32,44 +32,7 @@ agent = client.agents.create_or_update(
 
 
 # %%
-task_def = yaml.safe_load(
-    """
-name: NotebookTutor
-
-input_schema:
-  type: object
-  properties:
-    content:
-      type: string
-      description: Content of the paper
-main:
-  # Step 1: Generate a knowledge graph
-  - prompt:
-      - role: system
-        content: You are {{agent.name}}. {{agent.about}}
-      - role: user
-        content: |-
-          Based on the content '{{_.content}}', generate a list up to 5 topics about the provided content.  Return the output as a list of topics, with 3-5 questions per topic. Use the following format in valid yaml
-
-          ```yaml
-          topics:
-          - name: "<string>"
-            questions:
-            - "<string>"
-          - name: "<string>"
-            questions:
-            - "<string>"```
-
-
-    unwrap: true
-    settings:
-      model: claude-3.5-sonnet
-    unwrap: true
-
-  - evaluate:
-      knowledge_map: "load_yaml(_.split('```yaml')[1].split('```')[0].strip())"
-"""
-)
+task_def = yaml.safe_load(open("agents.yaml"))
 
 # %%
 # creating the task object
@@ -96,3 +59,5 @@ for step in client.executions.transitions.list(execution_id=execution.id).items:
 
 # %%
 print(execution.status)
+
+# %%
